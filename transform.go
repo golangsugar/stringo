@@ -5,41 +5,43 @@ import (
 	"unicode/utf8"
 )
 
+type TransformFlag uint
+
 const (
 	// TransformNone No transformations are ordered. Only constraints maximum length
 	// TransformNone turns all other flags OFF.
-	TransformNone = 1
-	// TransformFlagTrim Trim spaces before and after process the input
-	// TransformFlagTrim Trims the string, removing leading and trailing spaces
-	TransformFlagTrim = 2
-	// TransformFlagLowerCase Makes the string lowercase
-	// If case transformation flags are combined, the last one remains, considering the following order: TransformFlagTitleCase, TransformFlagLowerCase and TransformFlagUpperCase.
-	TransformFlagLowerCase = 4
-	// TransformFlagUpperCase Makes the string uppercase
-	// If case transformation flags are combined, the last one remains, considering the following order: TransformFlagTitleCase, TransformFlagLowerCase and TransformFlagUpperCase.
-	TransformFlagUpperCase = 8
-	// TransformFlagOnlyDigits Removes all non-numeric characters
-	TransformFlagOnlyDigits = 16
-	// TransformFlagOnlyLetters Removes all non-letter characters
-	TransformFlagOnlyLetters = 32
-	// TransformFlagOnlyLettersAndDigits Leaves only letters and numbers
-	TransformFlagOnlyLettersAndDigits = 64
-	// TransformFlagHash After process all other flags, applies SHA256 hashing on string for output
+	TransformNone TransformFlag = 1
+	// TransformTrim Trim spaces before and after process the input
+	// TransformTrim Trims the string, removing leading and trailing spaces
+	TransformTrim TransformFlag = 2
+	// TransformLowerCase Makes the string lowercase
+	// If case transformation flags are combined, the last one remains, considering the following order: TransformTitleCase, TransformLowerCase and TransformUpperCase.
+	TransformLowerCase TransformFlag = 4
+	// TransformUpperCase Makes the string uppercase
+	// If case transformation flags are combined, the last one remains, considering the following order: TransformTitleCase, TransformLowerCase and TransformUpperCase.
+	TransformUpperCase TransformFlag = 8
+	// TransformOnlyDigits Removes all non-numeric characters
+	TransformOnlyDigits TransformFlag = 16
+	// TransformOnlyLetters Removes all non-letter characters
+	TransformOnlyLetters TransformFlag = 32
+	// TransformOnlyLettersAndDigits Leaves only letters and numbers
+	TransformOnlyLettersAndDigits TransformFlag = 64
+	// TransformHash After process all other flags, applies SHA256 hashing on string for output
 	// 	The routine applies handy.Sha256Hash() on given string
-	TransformFlagHash = 128
-	// TransformFlagTitleCase Makes the string uppercase
-	// If case transformation flags are combined, the last one remains, considering the following order: TransformFlagTitleCase, TransformFlagLowerCase and TransformFlagUpperCase.
-	TransformFlagTitleCase = 256
-	// TransformFlagRemoveDigits Removes all digit characters, without to touch on any other
-	// If combined with TransformFlagOnlyLettersAndDigits, TransformFlagOnlyDigits or TransformFlagOnlyLetters, it's ineffective
-	TransformFlagRemoveDigits = 512
+	TransformHash TransformFlag = 128
+	// TransformTitleCase Makes the string uppercase
+	// If case transformation flags are combined, the last one remains, considering the following order: TransformTitleCase, TransformLowerCase and TransformUpperCase.
+	TransformTitleCase TransformFlag = 256
+	// TransformRemoveDigits Removes all digit characters, without to touch on any other
+	// If combined with TransformOnlyLettersAndDigits, TransformOnlyDigits or TransformOnlyLetters, it's ineffective
+	TransformRemoveDigits TransformFlag = 512
 )
 
 // Transform handles a string according given flags/parametrization, as follows:
 // The transformations are made in arbitrary order, what can result in unexpected output. If the order matters, use TransformSerially instead.
 // If maxLen==0, truncation is skipped
 // The last operations are, by order, truncation and trimming.
-func Transform(s string, maxLen int, transformFlags uint) string {
+func Transform(s string, maxLen int, transformFlags TransformFlag) string {
 	if s == "" {
 		return s
 	}
@@ -52,40 +54,40 @@ func Transform(s string, maxLen int, transformFlags uint) string {
 		return s
 	}
 
-	if (transformFlags & TransformFlagOnlyLettersAndDigits) == TransformFlagOnlyLettersAndDigits {
+	if (transformFlags & TransformOnlyLettersAndDigits) == TransformOnlyLettersAndDigits {
 		s = OnlyLettersAndNumbers(s)
 	}
 
-	if (transformFlags & TransformFlagOnlyDigits) == TransformFlagOnlyDigits {
+	if (transformFlags & TransformOnlyDigits) == TransformOnlyDigits {
 		s = OnlyDigits(s)
 	}
 
-	if (transformFlags & TransformFlagOnlyLetters) == TransformFlagOnlyLetters {
+	if (transformFlags & TransformOnlyLetters) == TransformOnlyLetters {
 		s = OnlyLetters(s)
 	}
 
-	if (transformFlags & TransformFlagRemoveDigits) == TransformFlagRemoveDigits {
+	if (transformFlags & TransformRemoveDigits) == TransformRemoveDigits {
 		s = RemoveDigits(s)
 	}
 
 	// Have to trim before and after, to avoid issues with string truncation and new leading/trailing spaces
-	if (transformFlags & TransformFlagTrim) == TransformFlagTrim {
+	if (transformFlags & TransformTrim) == TransformTrim {
 		s = strings.TrimSpace(s)
 	}
 
-	if (transformFlags & TransformFlagTitleCase) == TransformFlagTitleCase {
+	if (transformFlags & TransformTitleCase) == TransformTitleCase {
 		s = strings.Title(strings.ToLower(s))
 	}
 
-	if (transformFlags & TransformFlagLowerCase) == TransformFlagLowerCase {
+	if (transformFlags & TransformLowerCase) == TransformLowerCase {
 		s = strings.ToLower(s)
 	}
 
-	if (transformFlags & TransformFlagUpperCase) == TransformFlagUpperCase {
+	if (transformFlags & TransformUpperCase) == TransformUpperCase {
 		s = strings.ToUpper(s)
 	}
 
-	if (transformFlags & TransformFlagHash) == TransformFlagHash {
+	if (transformFlags & TransformHash) == TransformHash {
 		s = Sha256Hash(s)
 	}
 
@@ -98,7 +100,7 @@ func Transform(s string, maxLen int, transformFlags uint) string {
 	}
 
 	// Have to trim before and after, to avoid issues with string truncation and new leading/trailing spaces
-	if (transformFlags & TransformFlagTrim) == TransformFlagTrim {
+	if (transformFlags & TransformTrim) == TransformTrim {
 		s = strings.TrimSpace(s)
 	}
 
@@ -106,32 +108,32 @@ func Transform(s string, maxLen int, transformFlags uint) string {
 }
 
 // TransformSerially reformat given string according parameters, in the order these params were sent
-// Example: TransformSerially("uh lalah 123", 4, TransformFlagOnlyDigits,TransformFlagHash,TransformFlagUpperCase)
+// Example: TransformSerially("uh lalah 123", 4, TransformOnlyDigits,TransformHash,TransformUpperCase)
 //          First remove non-digits, then hashes string and after make it all uppercase.
 // If maxLen==0, truncation is skipped
 // Truncation is the last operation
-func TransformSerially(s string, maxLen int, transformFlags ...uint) string {
+func TransformSerially(s string, maxLen int, transformFlags ...TransformFlag) string {
 	if s == "" {
 		return s
 	}
 
 	for _, flag := range transformFlags {
 		switch flag {
-		case TransformFlagOnlyLettersAndDigits:
+		case TransformOnlyLettersAndDigits:
 			s = OnlyLettersAndNumbers(s)
-		case TransformFlagOnlyDigits:
+		case TransformOnlyDigits:
 			s = OnlyDigits(s)
-		case TransformFlagOnlyLetters:
+		case TransformOnlyLetters:
 			s = OnlyLetters(s)
-		case TransformFlagTrim:
+		case TransformTrim:
 			s = strings.TrimSpace(s)
-		case TransformFlagTitleCase:
+		case TransformTitleCase:
 			s = strings.ToTitle(s)
-		case TransformFlagLowerCase:
+		case TransformLowerCase:
 			s = strings.ToLower(s)
-		case TransformFlagUpperCase:
+		case TransformUpperCase:
 			s = strings.ToUpper(s)
-		case TransformFlagHash:
+		case TransformHash:
 			s = Sha256Hash(s)
 		}
 	}

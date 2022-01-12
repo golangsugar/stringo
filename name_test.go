@@ -59,7 +59,7 @@ func TestNameFirstAndLast(t *testing.T) {
 	type TestNameFirstAndLastStruct struct {
 		summary         string
 		name            string
-		transformFlags  uint
+		transformFlags  TransformFlag
 		expectedOutputS string
 	}
 
@@ -67,8 +67,8 @@ func TestNameFirstAndLast(t *testing.T) {
 		{"Only two letters", "x Y", TransformNone, `x Y`},
 		{"one word name", "namë", TransformNone, `namë`},
 		{"all non-ascii runes", "çá öáã àÿ", TransformNone, `çá àÿ`},
-		{"all non-ascii runes to upper", "çá öáã àÿ", TransformFlagUpperCase, `ÇÁ ÀŸ`},
-		{"mixing letters and numbers and then filtering digits off", "W0RDS W1TH NUMB3RS", TransformFlagRemoveDigits, `WRDS NUMBRS`},
+		{"all non-ascii runes to upper", "çá öáã àÿ", TransformUpperCase, `ÇÁ ÀŸ`},
+		{"mixing letters and numbers and then filtering digits off", "W0RDS W1TH NUMB3RS", TransformRemoveDigits, `WRDS NUMBRS`},
 		{"empty string", "", TransformNone, ``},
 		{"only spaces", "     ", TransformNone, ``},
 		{"with spaces and tabs", " FIRST NAME - MIDDLENAME 	LAST	 ", TransformNone, `FIRST LAST`},
@@ -76,9 +76,9 @@ func TestNameFirstAndLast(t *testing.T) {
 		{"only symbols", "5454#@$", TransformNone, `5454#@$`},
 		{"single letter", "x", TransformNone, `x`},
 		{"only spaces empty return", " 		 ", TransformNone, ``},
-		{"regular name to upper", "name lastname", TransformFlagUpperCase, `NAME LASTNAME`},
-		{"regular name to title", "name LASTNAME", TransformFlagTitleCase, `Name Lastname`},
-		{"REGULAR Name to lOwEr", "name LASTNAME", TransformFlagLowerCase, `name lastname`},
+		{"regular name to upper", "name lastname", TransformUpperCase, `NAME LASTNAME`},
+		{"regular name to title", "name LASTNAME", TransformTitleCase, `Name Lastname`},
+		{"REGULAR Name to lOwEr", "name LASTNAME", TransformLowerCase, `name lastname`},
 	}
 
 	for _, tst := range testlist {
@@ -96,7 +96,7 @@ func TestNameFirst(t *testing.T) {
 	type TestNameFirstStruct struct {
 		summary         string
 		name            string
-		transformFlags  uint
+		transformFlags  TransformFlag
 		expectedOutputS string
 	}
 
@@ -104,8 +104,8 @@ func TestNameFirst(t *testing.T) {
 		{"Only two letters", "x Y", TransformNone, `x`},
 		{"one word name", "namë", TransformNone, `namë`},
 		{"all non-ascii runes", "çá öáã àÿ", TransformNone, `çá`},
-		{"all non-ascii runes to upper", "çá öáã àÿ", TransformFlagUpperCase, `ÇÁ`},
-		{"mixing letters and numbers and then filtering digits off", "W0RDS W1TH NUMB3RS", TransformFlagRemoveDigits, `WRDS`},
+		{"all non-ascii runes to upper", "çá öáã àÿ", TransformUpperCase, `ÇÁ`},
+		{"mixing letters and numbers and then filtering digits off", "W0RDS W1TH NUMB3RS", TransformRemoveDigits, `WRDS`},
 		{"empty string", "", TransformNone, ``},
 		{"only spaces", "     ", TransformNone, ``},
 		{"with spaces and tabs", " FIRST NAME - MIDDLENAME 	LAST	 ", TransformNone, `FIRST`},
@@ -113,9 +113,9 @@ func TestNameFirst(t *testing.T) {
 		{"only symbols", "5454#@$", TransformNone, `5454#@$`},
 		{"single letter", "x", TransformNone, `x`},
 		{"only spaces empty return", " 		 ", TransformNone, ``},
-		{"regular name to upper", "name lastname", TransformFlagUpperCase, `NAME`},
-		{"regular name to title", "name LASTNAME", TransformFlagTitleCase, `Name`},
-		{"REGULAR Name to lOwEr", "name LASTNAME", TransformFlagLowerCase, `name`},
+		{"regular name to upper", "name lastname", TransformUpperCase, `NAME`},
+		{"regular name to title", "name LASTNAME", TransformTitleCase, `Name`},
+		{"REGULAR Name to lOwEr", "name LASTNAME", TransformLowerCase, `name`},
 	}
 
 	for _, tst := range testlist {
@@ -133,7 +133,7 @@ func TestNameInitials(t *testing.T) {
 	type tStruct struct {
 		summary        string
 		name           string
-		transformFlags uint
+		transformFlags TransformFlag
 		expectedOutput string
 	}
 
@@ -141,13 +141,13 @@ func TestNameInitials(t *testing.T) {
 		{`simplest 2 words name`, `miguel pragier`, TransformNone, `m p`},
 		{`3 words name separated`, `ivan alexandrovitch kleshtakov`, TransformNone, `i a k`},
 		{`3 words with unicode`, `Ívän Âlexandrovitch Çzelyatchenko`, TransformNone, `Í Â Ç`},
-		{`3 words with unicode title-case`, `ívän âlexandrovitch çzelyatchenko`, TransformFlagTitleCase, `Í Â Ç`},
+		{`3 words with unicode title-case`, `ívän âlexandrovitch çzelyatchenko`, TransformTitleCase, `Í Â Ç`},
 		{`empty string`, ``, TransformNone, ``},
 		{`dot`, `.`, TransformNone, `.`},
 		{`spaces and tabs`, "  \t\t \n", TransformNone, ``},
 		{`name with tabs`, "richard\t\tstallmann", TransformNone, `r s`},
 		{`noble name with 1`, `dom pedro 1`, TransformNone, `d p 1`},
-		{`noble name with I uppercase`, `dom pedro I`, TransformFlagUpperCase, `D P I`},
+		{`noble name with I uppercase`, `dom pedro I`, TransformUpperCase, `D P I`},
 		{`3 letters`, `x y z`, TransformNone, `x y z`},
 		{`one word`, `asingleword`, TransformNone, `a`},
 		{`comma separators`, `name,with,comma,separators`, TransformNone, `n`},

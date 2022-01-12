@@ -175,32 +175,6 @@ func TestRandomInt(t *testing.T) {
 	}
 }
 
-func TestStringAsFloat(t *testing.T) {
-	tcs := []struct {
-		summary           string
-		input             string
-		decimalSeparator  rune
-		thousandSeparator rune
-		expectedOutput    float64
-	}{
-		{"Normal Test", "60.42", '.', ',', 60.42},
-		{"Negative Test", "-60.42", '.', ',', -60.42},
-		{"Virgula como decimal Test", "60.42", ',', '.', 6042.000000},
-		{"ERROR TEST", "bla", '.', ',', 00.00},
-		{"empty", "", '.', ',', 0.0},
-		{"my test is a explosion", "1234567891236.00", '.', ',', 1234567891236.0},
-	}
-
-	for _, tc := range tcs {
-		t.Run(tc.summary, func(t *testing.T) {
-			tr := AsFloat64(tc.input, tc.decimalSeparator, tc.thousandSeparator)
-			if tr != tc.expectedOutput {
-				t.Errorf("Test has failed!\n\tExpected: %f, \n\tGot: %f, \n\tInput: %s\n\tDecimalSeparator: %c\n\tThousandSeparator: %c", tc.expectedOutput, tr, tc.input, tc.decimalSeparator, tc.thousandSeparator)
-			}
-		})
-	}
-}
-
 func TestTruncate(t *testing.T) {
 	tcs := []struct {
 		summary        string
@@ -230,20 +204,20 @@ func TestTransform(t *testing.T) {
 		summary        string
 		input          string
 		max            int
-		flags          uint
+		flags          TransformFlag
 		expectedOutput string
 	}{
 		{"without flags", "The Go programming language is an open source project to make programmers more productive.", 20, TransformNone, "The Go programming l"},
-		{"with trim", "   The Go programming language is an open source project to make programmers more productive.", 20, TransformFlagTrim, "The Go programming l"},
-		{"with lower case", "The Go programming language is an open source project to make programmers more productive.", 20, TransformFlagLowerCase, "the go programming l"},
-		{"with upper case", "The Go programming language is an open source project to make programmers more productive.", 20, TransformFlagUpperCase, "THE GO PROGRAMMING L"},
-		{"with Only Digits", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformFlagOnlyDigits, "1"},
-		{"with Only Letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformFlagOnlyLetters, "TheGoistheºprogrammi"},
-		{"with Only Letters and Numbers", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformFlagOnlyLettersAndDigits, "TheGoisthe1ºprogramm"},
-		{"with Only Hash", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformFlagHash, "e68e17f094e7c05eb7c9"},
-		{"with Only Hash and letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformFlagHash | TransformFlagOnlyLetters, "a29f4806226150623d9d"},
-		{"empty", "", 20, TransformFlagHash | TransformFlagOnlyLetters, ""},
-		{"spacing", " ", 1, TransformFlagOnlyLettersAndDigits | TransformFlagOnlyLetters | TransformFlagOnlyDigits | TransformFlagOnlyLetters | TransformFlagTrim | TransformFlagLowerCase | TransformFlagUpperCase, ""},
+		{"with trim", "   The Go programming language is an open source project to make programmers more productive.", 20, TransformTrim, "The Go programming l"},
+		{"with lower case", "The Go programming language is an open source project to make programmers more productive.", 20, TransformLowerCase, "the go programming l"},
+		{"with upper case", "The Go programming language is an open source project to make programmers more productive.", 20, TransformUpperCase, "THE GO PROGRAMMING L"},
+		{"with Only Digits", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformOnlyDigits, "1"},
+		{"with Only Letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformOnlyLetters, "TheGoistheºprogrammi"},
+		{"with Only Letters and Numbers", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformOnlyLettersAndDigits, "TheGoisthe1ºprogramm"},
+		{"with Only Hash", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformHash, "e68e17f094e7c05eb7c9"},
+		{"with Only Hash and letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, TransformHash | TransformOnlyLetters, "a29f4806226150623d9d"},
+		{"empty", "", 20, TransformHash | TransformOnlyLetters, ""},
+		{"spacing", " ", 1, TransformOnlyLettersAndDigits | TransformOnlyLetters | TransformOnlyDigits | TransformOnlyLetters | TransformTrim | TransformLowerCase | TransformUpperCase, ""},
 	}
 
 	for _, tc := range tcs {
@@ -353,17 +327,17 @@ func TestTransformSerially(t *testing.T) {
 		summary        string
 		input          string
 		max            int
-		flags          []uint
+		flags          []TransformFlag
 		expectedOutput string
 	}{
-		{"without flags", "The Go programming language is an open source project to make programmers more productive.", 20, []uint{TransformNone}, "The Go programming l"},
-		{"with trim and lowercase", "   The Go programming language is an open source project to make programmers more productive.", 20, []uint{TransformFlagTrim, TransformFlagLowerCase}, "the go programming l"},
-		{"with lower case and only letters", "The Go programming language is an open source project to make programmers more productive.", 20, []uint{TransformFlagLowerCase, TransformFlagOnlyLetters}, "thegoprogramminglang"},
-		{"with Only Hash and letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, []uint{TransformFlagHash, TransformFlagOnlyLetters}, "eefecebcfdbceccbbbcb"},
-		{"without string", "", 20, []uint{TransformNone}, ""},
-		{"Only letters and numbers", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []uint{TransformFlagOnlyLettersAndDigits}, "TheGoisthe1ºprogramm"},
-		{"Only numbers", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []uint{TransformFlagOnlyDigits}, "1"},
-		{"Go Upper!", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []uint{TransformFlagUpperCase}, "THE GO IS THE 1º! PR"},
+		{"without flags", "The Go programming language is an open source project to make programmers more productive.", 20, []TransformFlag{TransformNone}, "The Go programming l"},
+		{"with trim and lowercase", "   The Go programming language is an open source project to make programmers more productive.", 20, []TransformFlag{TransformTrim, TransformLowerCase}, "the go programming l"},
+		{"with lower case and only letters", "The Go programming language is an open source project to make programmers more productive.", 20, []TransformFlag{TransformLowerCase, TransformOnlyLetters}, "thegoprogramminglang"},
+		{"with Only Hash and letters", "The Go is the 1º programming language is an open source project to make programmers more productive.", 20, []TransformFlag{TransformHash, TransformOnlyLetters}, "eefecebcfdbceccbbbcb"},
+		{"without string", "", 20, []TransformFlag{TransformNone}, ""},
+		{"Only letters and numbers", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []TransformFlag{TransformOnlyLettersAndDigits}, "TheGoisthe1ºprogramm"},
+		{"Only numbers", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []TransformFlag{TransformOnlyDigits}, "1"},
+		{"Go Upper!", "The Go is the 1º! programming language is an open source project to make programmers more productive!", 20, []TransformFlag{TransformUpperCase}, "THE GO IS THE 1º! PR"},
 	}
 
 	for _, tc := range tcs {

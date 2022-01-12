@@ -74,8 +74,8 @@ func ChkPersonName(name string, acceptEmpty bool) ChkPersonNameResult {
 }
 
 // NameFirstAndLast returns the first and last words/names from the given input, optionally transformed by transformFlags
-// Example: handy.NameFirstAndLast("friedrich wilhelm nietzsche", handy.TransformFlagTitleCase) // returns "Friedrich Nietzsche"
-func NameFirstAndLast(name string, transformFlags uint) string {
+// Example: handy.NameFirstAndLast("friedrich wilhelm nietzsche", handy.TransformTitleCase) // returns "Friedrich Nietzsche"
+func NameFirstAndLast(name string, transformFlags TransformFlag) string {
 	name = strings.Replace(name, "\t", ` `, -1)
 
 	if transformFlags != TransformNone {
@@ -104,8 +104,8 @@ func NameFirstAndLast(name string, transformFlags uint) string {
 }
 
 // NameFirst returns the first word/name from the given input, optionally transformed by transformFlags
-// Example: handy.NameFirst("friedrich wilhelm nietzsche", handy.TransformFlagTitleCase) // returns "Friedrich"
-func NameFirst(name string, transformFlags uint) string {
+// Example: handy.NameFirst("friedrich wilhelm nietzsche", handy.TransformTitleCase) // returns "Friedrich"
+func NameFirst(name string, transformFlags TransformFlag) string {
 	name = strings.Replace(name, "\t", ` `, -1)
 
 	if transformFlags != TransformNone {
