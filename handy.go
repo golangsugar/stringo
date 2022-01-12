@@ -1,5 +1,4 @@
-// Package handy is a toolbelt with utilities and helpers like validators, sanitizers and string formatters.
-// There are routines to filter strings, convert between types, validate passwords with custom rules, easily format dates and much more.
+// Package stringo has utilities and helpers like validators, sanitizers and string formatters.
 package stringo
 
 import (
@@ -39,7 +38,7 @@ func Sha256Hash(s string) string {
 
 // Truncate limits the length of a given string, trimming or not, according parameters
 func Truncate(s string, maxLen int, trim bool) string {
-	if s == "" || maxLen<1{
+	if s == "" || maxLen < 1 {
 		return s
 	}
 

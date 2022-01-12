@@ -7,37 +7,39 @@ import (
 	"unicode/utf8"
 )
 
+type ChkPersonNameResult uint8
+
 const (
-	// CheckPersonNameResultOK means the name was validated
-	CheckPersonNameResultOK = 0
-	// CheckPersonNameResultPolluted The routine only accepts letters, single quotes and spaces
-	CheckPersonNameResultPolluted = 1
-	// CheckPersonNameResultTooFewWords The funcion requires at least 2 words
-	CheckPersonNameResultTooFewWords = 2
-	// CheckPersonNameResultTooShort the sum of all characters must be >= 6
-	CheckPersonNameResultTooShort = 3
-	// CheckPersonNameResultTooSimple The name rule requires that at least one word
-	CheckPersonNameResultTooSimple = 4
+	// ChkPersonNameOK means the name was validated
+	ChkPersonNameOK ChkPersonNameResult = 0
+	// ChkPersonNamePolluted The routine only accepts letters, single quotes and spaces
+	ChkPersonNamePolluted ChkPersonNameResult = 1
+	// ChkPersonNameTooFewWords The function requires at least 2 words
+	ChkPersonNameTooFewWords ChkPersonNameResult = 2
+	// ChkPersonNameTooShort the sum of all characters must be >= 6
+	ChkPersonNameTooShort ChkPersonNameResult = 3
+	// ChkPersonNameTooSimple The name rule requires that at least one word
+	ChkPersonNameTooSimple ChkPersonNameResult = 4
 )
 
-// CheckPersonName returns true if the name contains at least two words, one >= 3 chars and one >=2 chars.
+// ChkPersonName returns true if the name contains at least two words, one >= 3 chars and one >=2 chars.
 // I understand that this is a particular criteria, but this is the OpenSourceMagic, where you can change and adapt to your own specs.
-func CheckPersonName(name string, acceptEmpty bool) uint8 {
+func ChkPersonName(name string, acceptEmpty bool) ChkPersonNameResult {
 	name = strings.TrimSpace(name)
 
 	// If name is empty, AND it's accepted, return ok. Else, cry!
 	if name == "" {
 		if !acceptEmpty {
-			return CheckPersonNameResultTooShort
+			return ChkPersonNameTooShort
 		}
 
-		return CheckPersonNameResultOK
+		return ChkPersonNameOK
 	}
 
 	// Person names doesn't accept other than letters, spaces and single quotes
 	for _, r := range name {
 		if !unicode.IsLetter(r) && r != ' ' && r != '\'' && r != '-' {
-			return CheckPersonNameResultPolluted
+			return ChkPersonNamePolluted
 		}
 	}
 
@@ -45,7 +47,7 @@ func CheckPersonName(name string, acceptEmpty bool) uint8 {
 	a := strings.Fields(name)
 
 	if len(a) < 2 {
-		return CheckPersonNameResultTooFewWords
+		return ChkPersonNameTooFewWords
 	}
 
 	// At least two words, one with 3 chars and other with 2
@@ -65,10 +67,10 @@ func CheckPersonName(name string, acceptEmpty bool) uint8 {
 	}
 
 	if !found2 || !found3 {
-		return CheckPersonNameResultTooSimple
+		return ChkPersonNameTooSimple
 	}
 
-	return CheckPersonNameResultOK
+	return ChkPersonNameOK
 }
 
 // NameFirstAndLast returns the first and last words/names from the given input, optionally transformed by transformFlags

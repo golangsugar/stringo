@@ -7,31 +7,31 @@ func TestCheckPersonName(t *testing.T) {
 		summary        string
 		name           string
 		acceptEmpty    bool
-		expectedOutput uint8
+		expectedOutput ChkPersonNameResult
 	}
 
 	testlist := []TestStructForCheckPersonName{
-		{"Only two letters", "T S", false, CheckPersonNameResultTooSimple},
-		{"only four letters", "AB CD", false, CheckPersonNameResultTooSimple},
-		{"five letters with non-ascii runes", "ça vá", false, CheckPersonNameResultTooSimple},
-		{"mixing letters and numbers", "W0RDS W1TH NUMB3RS", false, CheckPersonNameResultPolluted},
-		{"Sending and accepting empty string", "", true, CheckPersonNameResultOK},
-		{"Sending spaces-only string and accepting empty", "     ", true, CheckPersonNameResultOK},
-		{"Sending but not accepting empty string", " ", false, CheckPersonNameResultTooShort},
-		{"Sending spaces-only string and refusing empty", "     ", false, CheckPersonNameResultTooShort},
-		{"Sending numbers, expecting false", " 5454 ", true, CheckPersonNameResultPolluted},
-		{"OneWorded string", "ONEWORD", false, CheckPersonNameResultTooFewWords},
-		{"Minimum acceptable", "AB CDE", false, CheckPersonNameResultOK},
-		{"Non-ascii stuff", "ÑÔÑÀSÇÏÏ ÇÃO ÀË", false, CheckPersonNameResultOK},
-		{"Words with symbols. Expecting true", "WORDS-WITH SYMBOLS'", false, CheckPersonNameResultOK},
-		{"Words with symbols. Expecting false", "WORDS WITH SYMBOLS`", false, CheckPersonNameResultPolluted},
-		{"less than two letters", "a", false, CheckPersonNameResultTooFewWords},
-		{"Sending numbers, expecting false", "5454", false, CheckPersonNameResultPolluted},
+		{"Only two letters", "T S", false, ChkPersonNameTooSimple},
+		{"only four letters", "AB CD", false, ChkPersonNameTooSimple},
+		{"five letters with non-ascii runes", "ça vá", false, ChkPersonNameTooSimple},
+		{"mixing letters and numbers", "W0RDS W1TH NUMB3RS", false, ChkPersonNamePolluted},
+		{"Sending and accepting empty string", "", true, ChkPersonNameOK},
+		{"Sending spaces-only string and accepting empty", "     ", true, ChkPersonNameOK},
+		{"Sending but not accepting empty string", " ", false, ChkPersonNameTooShort},
+		{"Sending spaces-only string and refusing empty", "     ", false, ChkPersonNameTooShort},
+		{"Sending numbers, expecting false", " 5454 ", true, ChkPersonNamePolluted},
+		{"OneWorded string", "ONEWORD", false, ChkPersonNameTooFewWords},
+		{"Minimum acceptable", "AB CDE", false, ChkPersonNameOK},
+		{"Non-ascii stuff", "ÑÔÑÀSÇÏÏ ÇÃO ÀË", false, ChkPersonNameOK},
+		{"Words with symbols. Expecting true", "WORDS-WITH SYMBOLS'", false, ChkPersonNameOK},
+		{"Words with symbols. Expecting false", "WORDS WITH SYMBOLS`", false, ChkPersonNamePolluted},
+		{"less than two letters", "a", false, ChkPersonNameTooFewWords},
+		{"Sending numbers, expecting false", "5454", false, ChkPersonNamePolluted},
 	}
 
 	for _, tst := range testlist {
 		t.Run(tst.summary, func(t *testing.T) {
-			tr := CheckPersonName(tst.name, tst.acceptEmpty)
+			tr := ChkPersonName(tst.name, tst.acceptEmpty)
 
 			if tr != tst.expectedOutput {
 				t.Errorf("Test has failed!\n\tName: %s\n\tAcceptEmpty: %t, \n\tExpected: %d, \n\tGot: %d,", tst.name, tst.acceptEmpty, tst.expectedOutput, tr)
@@ -155,7 +155,7 @@ func TestNameInitials(t *testing.T) {
 
 	for _, tst := range testlist {
 		t.Run(tst.summary, func(t *testing.T) {
-			s := Initials(tst.name, tst.transformFlags)
+			s := Initials(tst.name)
 
 			if s != tst.expectedOutput {
 				t.Errorf(`[%s] Test has failed! Given name: "%s", Expected string: "%s", Got: "%s"`, tst.summary, tst.name, tst.expectedOutput, s)

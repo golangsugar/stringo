@@ -23,12 +23,12 @@ const (
 	// CheckNewPasswordComplexityLowest There's no rules besides the minimum length
 	// >>> This flag turns all others off <<<
 	CheckNewPasswordComplexityLowest = 1
-	// CheckNewPasswordComplexityRequireLetter At least one letter is required in order to aprove password
+	// CheckNewPasswordComplexityRequireLetter At least one letter is required in order to approve password
 	CheckNewPasswordComplexityRequireLetter = 2
-	// CheckNewPasswordComplexityRequireUpperCase At least one uppercase letter is required in order to aprove password.
+	// CheckNewPasswordComplexityRequireUpperCase At least one uppercase letter is required in order to approve password.
 	// Only works if CheckNewPasswordComplexityRequireLetter is included/activated
 	CheckNewPasswordComplexityRequireUpperCase = 4
-	// CheckNewPasswordComplexityRequireNumber At least one number is required in order to aprove password
+	// CheckNewPasswordComplexityRequireNumber At least one number is required in order to approve password
 	CheckNewPasswordComplexityRequireNumber = 8
 	// CheckNewPasswordComplexityRequireSpace The password must contain at least one space
 	CheckNewPasswordComplexityRequireSpace = 16

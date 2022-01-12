@@ -36,7 +36,7 @@ const (
 )
 
 // Transform handles a string according given flags/parametrization, as follows:
-// The transformations are made in arbitrary order, what can result in unexpected output. It the input matters, use TransformSerially instead.
+// The transformations are made in arbitrary order, what can result in unexpected output. If the order matters, use TransformSerially instead.
 // If maxLen==0, truncation is skipped
 // The last operations are, by order, truncation and trimming.
 func Transform(s string, maxLen int, transformFlags uint) string {
