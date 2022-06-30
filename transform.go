@@ -3,6 +3,9 @@ package stringo
 import (
 	"strings"
 	"unicode/utf8"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type TransformFlag uint
@@ -36,6 +39,8 @@ const (
 	// If combined with TransformOnlyLettersAndDigits, TransformOnlyDigits or TransformOnlyLetters, it's ineffective
 	TransformRemoveDigits TransformFlag = 512
 )
+
+var caser = cases.Title(language.Und)
 
 // Transform handles a string according given flags/parametrization, as follows:
 // The transformations are made in arbitrary order, what can result in unexpected output. If the order matters, use TransformSerially instead.
@@ -76,7 +81,9 @@ func Transform(s string, maxLen int, transformFlags TransformFlag) string {
 	}
 
 	if (transformFlags & TransformTitleCase) == TransformTitleCase {
-		s = strings.Title(strings.ToLower(s))
+		title := caser.String(s)
+
+		s = strings.ToLower(title)
 	}
 
 	if (transformFlags & TransformLowerCase) == TransformLowerCase {
