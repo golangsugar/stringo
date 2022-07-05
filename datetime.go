@@ -42,14 +42,14 @@ func DateTimeAsString(dt time.Time, format string) string {
 }
 
 // DateReformat gets a date string in a given currentFormat, and transform it according newFormat
-func DateReformat(d string, currentFormat, newFormat string) string {
-	currentFormat = golangDateTimeFormat(currentFormat)
+func DateReformat(d string, currentLayout, newLayout string) string {
+	currentLayout = golangDateTimeFormat(currentLayout)
 
-	if t, err := time.Parse(d, currentFormat); err != nil || t.IsZero() {
+	if t, err := time.Parse(currentLayout, d); err != nil || t.IsZero() {
 		return ""
 	} else {
-		newFormat = golangDateTimeFormat(newFormat)
+		newLayout = golangDateTimeFormat(newLayout)
 
-		return t.Format(newFormat)
+		return t.Format(newLayout)
 	}
 }
